@@ -1,0 +1,27 @@
+{
+  "name": "ar-scrollbar",
+  "version": "1.0.0",
+  "authors": [
+    "Ara Yeressian <ayeressian@macadamian.com>"
+  ],
+  "description": "flexible scrolling directive for angular",
+  "moduleType": [
+    "globals"
+  ],
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jquery": "2.1.x",
+    "angular": "1.3.x",
+    "jquery-mousewheel": "3.1.x",
+    "jquery.actual": "1.0.x"
+  },  
+  "directory" : "lib"  
+}

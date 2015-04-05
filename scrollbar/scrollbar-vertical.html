@@ -1,0 +1,10 @@
+<div class="scrollbar vertical" ng-show="needed" ng-if="!isHorizontal">
+    <div class="top-arrow arrow" ng-mousedown="decreaseArrowMouseDown()"></div>
+    <div class="slider-bed"
+    ng-mousedown="jumpClick($event)">
+        <div class="slider"
+        ng-mousedown="mouseDown($event)"
+        ng-mousemove="mouseMove($event)"></div>
+    </div>  
+    <div class="bottom-arrow arrow" ng-mousedown="increaseArrowMouseDown()"></div>
+</div>

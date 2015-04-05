@@ -1,0 +1,16 @@
+{
+  "name": "flexible-scrollbar",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Ara Yeressian",
+  "license": "MIT",
+  "devDependencies" : {
+     "grunt": "~0.4.5",
+     "grunt-contrib-jshint": "~0.11.1",
+     "grunt-jsbeautifier": "~0.2.10"
+  }
+}

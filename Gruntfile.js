@@ -1,23 +1,26 @@
-module.export = function(grunt) {
+/*global module:false */
+
+module.exports = function(grunt) {
     'use strict';
     
+    // Project configuration.
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
         jsbeautifier: {
-            files: ['Gruntfile.js', '**/*.js', '**/*.css', '**/*.html'],
+            files: ['**/*.js', '**/*.css' , '**/*.html', '!bower_components/**/*', '!node_modules/**/*'],
             options: {}
         },
         jshint: {
-            all: ['Gruntfile.js', '**/*.js', '!bower_components/'],
+            all: ['**/*.js', '!bower_components/**/*', '!node_modules/**/*'],
             options: {
                 jshintrc: true
             }
         }
     });
-    
-    grunt.loadNpmTasks('grunt-contrib-jshint');
+
     grunt.loadNpmTasks('grunt-jsbeautifier');
-    
-    grunt.registerTask('default', ['jshint', 'jsbeautifier']);
-    grunt.registerTask('jshint', ['jshint']);
+    grunt.loadNpmTasks('grunt-contrib-jshint');
+
+    grunt.registerTask('default', ['jshint']);
+    grunt.registerTask('pre-commit', ['jshint']);
 };

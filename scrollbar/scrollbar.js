@@ -8,7 +8,7 @@ $.fn.scrollbar = function($targetElement, isHorizontal) {
         $slider = $sliderBed.find('.slider'), 
         SLIDER_ARROW_AMOUNT = 15, 
         CONST_MOVE_MIL = 75, 
-        MINIMUM_SLIDER_SIZE = 0, 
+        MINIMUM_SLIDER_SIZE = 40, 
         currentSliderPos, 
         stopArrowMouseDown = false, 
         mousePosRelativeToSlider, 
@@ -104,8 +104,8 @@ $.fn.scrollbar = function($targetElement, isHorizontal) {
             };
         })();
         
-        function updateSliderSize() {            
-            var scrollSize, targetElementRatio, oldSliderSize = sliderSize;
+        function updateSliderSize() {
+            var scrollSize, targetElementRatio, targetSliderCalculatedPos;
             // actual operation is slow try to avoid it
             if ($scrollbar.css('display') === 'none') {
                 sliderBedSize = helper.actual($sliderBed);
@@ -121,15 +121,12 @@ $.fn.scrollbar = function($targetElement, isHorizontal) {
             if (sliderSize < MINIMUM_SLIDER_SIZE) {
                 sliderSize = MINIMUM_SLIDER_SIZE;
             }
-            helper.size($slider, sliderSize);
+            helper.size($slider, sliderSize);            
             
-            if (oldSliderSize !== sliderSize) {
-                console.log(helper.scroll($targetElement));
-                console.log(targetElementRatio);
-                setSliderPos(helper.scroll($targetElement) * targetElementRatio);
-                console.log(helper.scroll($targetElement));
-                console.log(targetElementRatio);
-            }
+            //Set scroll to its correct position after target size change
+            targetSliderCalculatedPos = helper.scroll($targetElement) / (helper.scrollSize($targetElement) - helper.size($targetElement));
+            currentSliderPos = (sliderBedSize - sliderSize) * targetSliderCalculatedPos;
+            helper.position($slider, currentSliderPos);        
         }
         
         updateSliderSize();

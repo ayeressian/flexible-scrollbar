@@ -15,8 +15,7 @@ $.fn.scrollbar = function($targetElement, isHorizontal) {
         helper, 
         sliderBedSize, 
         sliderSize, 
-        $body = $(document.body), 
-        targetElementRatio;
+        $body = $(document.body);
         
         helper = (function() {
             if (!isHorizontal) {
@@ -105,11 +104,8 @@ $.fn.scrollbar = function($targetElement, isHorizontal) {
             };
         })();
         
-        sliderBedSize = helper.size($sliderBed);
-        sliderSize = helper.size($slider);
-        
-        function updateSliderSize() {
-            var scrollSize, oldTargetElementRatio = targetElementRatio;
+        function updateSliderSize() {            
+            var scrollSize, targetElementRatio, oldSliderSize = sliderSize;
             // actual operation is slow try to avoid it
             if ($scrollbar.css('display') === 'none') {
                 sliderBedSize = helper.actual($sliderBed);
@@ -126,13 +122,14 @@ $.fn.scrollbar = function($targetElement, isHorizontal) {
                 sliderSize = MINIMUM_SLIDER_SIZE;
             }
             helper.size($slider, sliderSize);
-            if (oldTargetElementRatio !== undefined) {
-                var targetElementRatioChange = targetElementRatio - oldTargetElementRatio;
-                if (targetElementRatioChange !== 0) {
-                    helper.position($targetElement, parseInt(helper.position($slider), 10) * targetElementRatioChange);
-                }
+            
+            if (oldSliderSize !== sliderSize) {
+                console.log(helper.scroll($targetElement));
+                console.log(targetElementRatio);
+                setSliderPos(helper.scroll($targetElement) * targetElementRatio);
+                console.log(helper.scroll($targetElement));
+                console.log(targetElementRatio);
             }
-            setSliderPos(parseInt(helper.position($slider), 10));
         }
         
         updateSliderSize();

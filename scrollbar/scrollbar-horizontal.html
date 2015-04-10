@@ -1,10 +1,7 @@
 <div class="scrollbar horizontal" ng-show="needed" ng-if="isHorizontal">
     <div class="left-arrow arrow" ng-mousedown="decreaseArrowMouseDown()"></div>
     <div class="right-arrow arrow" ng-mousedown="increaseArrowMouseDown()"></div>
-    <div class="slider-bed"
-    ng-mousedown="jumpClick($event)">
-        <div class="slider"
-        ng-mousedown="mouseDown($event)"
-        ng-mousemove="mouseMove($event)"></div>
-    </div>    
+    <div class="slider-bed" ng-mousedown="jumpClick($event)">
+        <div class="slider" ng-mousedown="mouseDown($event)" ng-mousemove="mouseMove($event)"></div>
+    </div>
 </div>

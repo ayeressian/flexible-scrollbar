@@ -1,8 +1,10 @@
 /*HORIZONTAL*/
+
 .scrollbar.horizontal {
     width: 100%;
     height: 12px;
 }
+
 .scrollbar.horizontal .arrow {
     display: inline-block;
     height: 100%;
@@ -11,14 +13,17 @@
     background-repeat: no-repeat;
     background-position: center;
 }
+
 .scrollbar.horizontal .left-arrow {
     float: left;
     background-image: url(icon-arrow-left.svg);
 }
+
 .scrollbar.horizontal .right-arrow {
     float: right;
     background-image: background-image: url(icon-arrow-right.svg);
 }
+
 .scrollbar.horizontal .slider-bed {
     position: relative;
     overflow: hidden;
@@ -29,6 +34,7 @@
     border-radius: 10px;
     top: 2px;
 }
+
 .scrollbar.horizontal .slider {
     position: absolute;
     width: 100px;
@@ -40,18 +46,20 @@
     border: 1px solid transparent;
     background-clip: content-box;
 }
+
 .scrollbar.horizontal .slider:hover {
     background-color: #999;
 }
 /*HORIZONTAL END*/
-
 /*VERTICAL*/
+
 .scrollbar.vertical {
     width: 12px;
     height: 100%;
     overflow: auto;
-    position: relative;    
+    position: relative;
 }
+
 .scrollbar.vertical .arrow {
     position: absolute;
     left: 0px;
@@ -61,14 +69,17 @@
     background-size: cover;
     background-position: center;
 }
+
 .scrollbar.vertical .top-arrow {
     background-image: url(icon-arrow-up.svg);
     top: 0px;
 }
+
 .scrollbar.vertical .bottom-arrow {
     background-image: url(icon-arrow-down.svg);
     bottom: 0px;
 }
+
 .scrollbar.vertical .slider-bed {
     position: absolute;
     background-color: #EEE;
@@ -78,13 +89,15 @@
     bottom: 10px;
     left: 0px;
 }
+
 .scrollbar.vertical .slider {
     position: absolute;
-    width: inherit;    
+    width: inherit;
     background-color: #CCC;
     border-radius: inherit;
     top: 0;
 }
+
 .scrollbar.vertical .slider:hover {
     background-color: #999;
 }

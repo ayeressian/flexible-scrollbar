@@ -1,6 +1,6 @@
 /*global module:false */
 
-module.exports = function (grunt) {
+module.exports = function(grunt) {
     'use strict';
 
     // Project configuration.
@@ -18,12 +18,20 @@ module.exports = function (grunt) {
         },
         githooks: {
             all: {
-                options: {                    
+                options: {
+                  startMarker: 'grunt-githook start',
+                  endMarker: 'grunt-githook end'
                 },
-                'pre-commit': 'jshint',
+                'pre-commit': 'jshint jsbeautifier',
                 'post-merge': {
                     taskNames: 'bower:install'
                 }
+            }
+        },
+        'http-server': {
+            dev: {
+                port: 3000,
+                host: "0.0.0.0"
             }
         }
     });
@@ -31,7 +39,8 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-githooks');
     grunt.loadNpmTasks('grunt-jsbeautifier');
     grunt.loadNpmTasks('grunt-contrib-jshint');
+    grunt.loadNpmTasks('grunt-http-server');
 
-    grunt.registerTask('default', ['jshint']);
+    grunt.registerTask('default', ['jshint', 'jsbeautifier']);
     grunt.registerTask('pre-commit', ['jshint']);
 };

@@ -1,10 +1,10 @@
 {
-  "name": "ar-scrollbar",
+  "name": "flexible-scrollbar",
   "version": "1.0.0",
   "authors": [
     "Ara Yeressian <ayeressian@macadamian.com>"
   ],
-  "description": "flexible scrolling directive for angular",
+  "description": "A jQuery plugin for making highly configurable scrollbars",
   "moduleType": [
     "globals"
   ],

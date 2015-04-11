@@ -1,62 +1,57 @@
 /*HORIZONTAL*/
-
 .scrollbar.horizontal {
     width: 100%;
     height: 12px;
+    overflow: none;
+    position: relative;
 }
 
 .scrollbar.horizontal .arrow {
-    display: inline-block;
-    height: 100%;
-    width: 8px;
-    height: 12px;
+    position: absolute;    
+    height: inherit;
+    width: 10px;
     background-repeat: no-repeat;
+    background-size: cover;
     background-position: center;
 }
 
 .scrollbar.horizontal .left-arrow {
-    float: left;
+    left: 0;
     background-image: url(icon-arrow-left.svg);
 }
 
 .scrollbar.horizontal .right-arrow {
-    float: right;
-    background-image: background-image: url(icon-arrow-right.svg);
+    right: 0;
+    background-image: url(icon-arrow-right.svg);
 }
 
 .scrollbar.horizontal .slider-bed {
-    position: relative;
-    overflow: hidden;
-    height: 8px;
+    position: absolute;
     background-color: #EEE;
-    border: 1px solid transparent;
-    background-clip: content-box;
-    border-radius: 10px;
-    top: 2px;
+    border-radius: 5px;
+    height: inherit;
+    left: 10px;
+    right: 10px; 
 }
 
 .scrollbar.horizontal .slider {
     position: absolute;
-    width: 100px;
     height: inherit;
-    left: 0;
-    top: -1px;
     background-color: #CCC;
-    border-radius: 10px;
-    border: 1px solid transparent;
-    background-clip: content-box;
+    border-radius: inherit;
+    left: 0;
 }
 
 .scrollbar.horizontal .slider:hover {
     background-color: #999;
 }
 /*HORIZONTAL END*/
-/*VERTICAL*/
 
+/*VERTICAL*/
 .scrollbar.vertical {
     width: 12px;
     height: 100%;
-    overflow: auto;
+    overflow: none;
     position: relative;
 }
 

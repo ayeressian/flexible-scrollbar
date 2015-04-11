@@ -18,10 +18,7 @@ module.exports = function(grunt) {
         },
         githooks: {
             all: {
-                options: {
-                  startMarker: 'grunt-githook start',
-                  endMarker: 'grunt-githook end'
-                },
+                options: {},
                 'pre-commit': 'jshint jsbeautifier',
                 'post-merge': {
                     taskNames: 'bower:install'

@@ -3,21 +3,29 @@
     height: 300px;
     overflow: auto;
     float: left;
+    background-color: #DDD;
+    margin: 10px;
 }
 
-.scrollbar-container {
+.vert-scrollbar-container {
     float: left;
     height: 300px;
-}
-
-#first-container {
-    background-color: #DDD;
-}
-
-#second-container {
     margin-top: 10px;
-    clear: both;
-    background-color: #DDD;
+}
+
+.horiz-scrollbar-container {
+    width: 300px;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+.no-wrap {
+    white-space: nowrap;
+}
+
+#flexible-scrollbar-target-vert {
+    margin-right: 0;
+    width: 288px;
 }
 
 .button-container {
@@ -31,4 +39,18 @@
 
 .red {
     background-color: red;
+}
+
+.float-left {
+    float: left;
+}
+
+#flexible-scrollbar-target-horiz {
+    float: none;    
+    margin-bottom: 0;
+    height: 288px;
+}
+
+.clear-both {
+    clear: both;
 }

@@ -1,9 +1,9 @@
-$.fn.scrollbar = function($targetElement, isHorizontal) {
+$.fn.scrollbar = function(targetElement, isHorizontal) {
     'use strict';
-
+    var $targetElement = $(targetElement);
     $targetElement.css('overflow', 'hidden');
 
-    function scrollbar   ($scrollbar) {
+    function scrollbar($scrollbar) {
         var $sliderBed = $scrollbar.find('.slider-bed'),
             $mainDiv,
             $slider = $sliderBed.find('.slider'),
@@ -208,8 +208,10 @@ $.fn.scrollbar = function($targetElement, isHorizontal) {
         }
 
         $scrollbar.find('.left-arrow, .top-arrow').on('mousedown', function() {
+            var interval;
             stopArrowMouseDown = false;
-            var interval = setInterval(function() {
+            decreaseArrow();
+            interval = setInterval(function() {
                 if (stopArrowMouseDown || decreaseArrow()) {
                     clearInterval(interval);
                 }
@@ -217,8 +219,10 @@ $.fn.scrollbar = function($targetElement, isHorizontal) {
         });
 
         $scrollbar.find('.right-arrow, .bottom-arrow').on('mousedown', function() {
+            var interval;
             stopArrowMouseDown = false;
-            var interval = setInterval(function() {
+            increaseArrow();
+            interval = setInterval(function() {
                 if (stopArrowMouseDown || increaseArrow()) {
                     clearInterval(interval);
                 }

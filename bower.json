@@ -19,8 +19,7 @@
   ],
   "dependencies": {
     "jquery": "2.1.x",
-    "jquery-mousewheel": "3.1.x",
-    "jquery.actual": "1.0.x"
-  },  
+    "jquery-mousewheel": "3.1.x"
+  },
   "directory" : "lib"  
 }

@@ -284,16 +284,29 @@ $.fn.scrollbar = function(targetElement, isHorizontal, minSliderSize) {
         });
         
         $targetElement.mousewheel(function(event) {
-            var delta = helper.mousewheelDelta(event);
-            if (!isHorizontal && event.webkitDirectionInvertedFromDevice) {
-                delta *= -1;
-            }
-            setSliderPos(currentSliderPos + delta * event.deltaFactor);
+            var delta = helper.mousewheelDelta(event);           
+            
+            if (!isHorizontal) {
+                //detect invert scrolling on mac safari
+                if (event.originalEvent.webkitDirectionInvertedFromDevice) {
+                    delta *= -1;
+                } else if (navigator.platform.toUpperCase().indexOf('MAC') >= 0) {
+                    delta *= -1;
+                }
+            } else {
+                if (event.originalEvent.webkitDirectionInvertedFromDevice === false) {
+                    delta *= -1;
+                } else if (navigator.platform.toUpperCase().indexOf('MAC') < 0) {
+                    delta *= -1;
+                }
+            }            
+            setSliderPos(currentSliderPos + delta * (event.deltaFactor / 4));
             event.preventDefault();
         });
         
         function targetElementTouchInit() {
             var touchPos, eventForSwipeLatest, eventForSwipeOneBeforeLatest, swipIntervalHandel;
+            
             function inertiaAnimator(velocity) {
                 var MILLISECOND_PER_FRAME = 16, 
                 FRICTION_COEFFICIENT = 0.95, 
@@ -324,7 +337,10 @@ $.fn.scrollbar = function(targetElement, isHorizontal, minSliderSize) {
                     //Clear any ongoing inertia animation
                     clearInterval(swipIntervalHandel);
                     touchPos = helper.touchSinglePagePos(event);
-                    eventForSwipeLatest = {position: touchPos,time: event.timeStamp};
+                    eventForSwipeLatest = {
+                        position: touchPos,
+                        time: event.timeStamp
+                    };
                 }
             }).on('touchmove', function(event) {
                 var originaltouchPos;
@@ -336,7 +352,10 @@ $.fn.scrollbar = function(targetElement, isHorizontal, minSliderSize) {
                     event.preventDefault();
                     
                     eventForSwipeOneBeforeLatest = eventForSwipeLatest;
-                    eventForSwipeLatest = {position: touchPos,time: event.timeStamp};
+                    eventForSwipeLatest = {
+                        position: touchPos,
+                        time: event.timeStamp
+                    };
                 }
             }).on('touchend touchcancel', function(event) {
                 var timeDelta = eventForSwipeLatest.time - eventForSwipeOneBeforeLatest.time;

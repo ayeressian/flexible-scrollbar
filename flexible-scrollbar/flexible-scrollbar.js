@@ -1,7 +1,11 @@
 $.fn.scrollbar = function(targetElement, isHorizontal, minSliderSize) {
     'use strict';
     var $targetElement = $(targetElement);
-    $targetElement.css('overflow', 'hidden');
+    if (isHorizontal) {
+        $targetElement.css('overflow-x', 'hidden');
+    } else {
+        $targetElement.css('overflow-y', 'hidden');
+    }
     
     function scrollbar($scrollbar) {
         var $sliderBed = $scrollbar.find('.slider-bed'), 
@@ -278,26 +282,30 @@ $.fn.scrollbar = function(targetElement, isHorizontal, minSliderSize) {
             }, CONST_MOVE_MIL);
         });
         
-        $targetElement.mousewheel(function(event) {
-            var delta = helper.mousewheelDelta(event);
-            
-            if (!isHorizontal) {
-                //detect invert scrolling on mac safari
-                if (event.originalEvent.webkitDirectionInvertedFromDevice) {
-                    delta *= -1;
-                } else if (navigator.platform.toUpperCase().indexOf('MAC') >= 0) {
-                    delta *= -1;
+        if ($targetElement.mousewheel) {
+            $targetElement.mousewheel(function(event) {
+                var delta = helper.mousewheelDelta(event), edgeReached;
+                
+                if (!isHorizontal) {
+                    //detect invert scrolling on mac safari
+                    if (event.originalEvent.webkitDirectionInvertedFromDevice) {
+                        delta *= -1;
+                    } else if (navigator.platform.toUpperCase().indexOf('MAC') >= 0) {
+                        delta *= -1;
+                    }
+                } else {
+                    if (event.originalEvent.webkitDirectionInvertedFromDevice === false) {
+                        delta *= -1;
+                    } else if (navigator.platform.toUpperCase().indexOf('MAC') < 0) {
+                        delta *= -1;
+                    }
                 }
-            } else {
-                if (event.originalEvent.webkitDirectionInvertedFromDevice === false) {
-                    delta *= -1;
-                } else if (navigator.platform.toUpperCase().indexOf('MAC') < 0) {
-                    delta *= -1;
-                }
-            }
-            setSliderPos(currentSliderPos + delta * (event.deltaFactor / 4));
-            event.preventDefault();
-        });
+                edgeReached = setSliderPos(currentSliderPos + delta * (event.deltaFactor / 4));
+                if (!edgeReached) {
+                    event.preventDefault();    
+                }                
+            });
+        }
         
         function targetElementTouchInit() {
             var touchPos, eventForSwipeLatest, eventForSwipeOneBeforeLatest, swipIntervalHandel;
@@ -382,7 +390,8 @@ $.fn.scrollbar = function(targetElement, isHorizontal, minSliderSize) {
             '<div class="bottom-arrow arrow"></div>' + 
             '</div>';
         }
-        $element.html(html);        
+        $element.html(html);
+        scrollbar($element);
     });
     
     return this;

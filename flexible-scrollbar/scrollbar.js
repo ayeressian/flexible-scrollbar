@@ -2,35 +2,35 @@ $.fn.scrollbar = function(targetElement, isHorizontal, minSliderSize) {
     'use strict';
     var $targetElement = $(targetElement);
     $targetElement.css('overflow', 'hidden');
-
+    
     function scrollbar($scrollbar) {
-        var $sliderBed = $scrollbar.find('.slider-bed'),
-            $slider = $sliderBed.find('.slider'),
-            SLIDER_ARROW_AMOUNT = 15,
-            CONST_MOVE_MIL = 75,
-            MINIMUM_SLIDER_SIZE = 40,
-            currentSliderPos,
-            stopArrowMouseDown = false,
-            mousePosRelativeToSlider,
-            helper,
-            sliderBedSize,
-            sliderSize,
-            $body = $(document.body);
-
+        var $sliderBed = $scrollbar.find('.slider-bed'), 
+        $slider = $sliderBed.find('.slider'), 
+        SLIDER_ARROW_AMOUNT = 15, 
+        CONST_MOVE_MIL = 75, 
+        MINIMUM_SLIDER_SIZE = 40, 
+        currentSliderPos, 
+        stopArrowMouseDown = false, 
+        mousePosRelativeToSlider, 
+        helper, 
+        sliderBedSize, 
+        sliderSize, 
+        $body = $(document.body);
+        
         if (minSliderSize === undefined || minSliderSize === null) {
             minSliderSize = MINIMUM_SLIDER_SIZE;
         }
-
+        
         function isTouchEvent(event) {
             var type;
             event = $.Event(event);
             type = event.type;
-            return type === 'touchstart' ||
-                type === 'touchmove' ||
-                type === 'touchend' ||
-                type === 'touchcancel';
+            return type === 'touchstart' || 
+            type === 'touchmove' || 
+            type === 'touchend' || 
+            type === 'touchcancel';
         }
-
+        
         helper = (function() {
             if (!isHorizontal) {
                 return {
@@ -147,13 +147,13 @@ $.fn.scrollbar = function(targetElement, isHorizontal, minSliderSize) {
                 }
             };
         })();
-
+        
         function setSliderPosFromTarget() {
             var targetSliderCalculatedPos = helper.scroll($targetElement) / (helper.scrollSize($targetElement) - helper.size($targetElement));
             currentSliderPos = (sliderBedSize - sliderSize) * targetSliderCalculatedPos;
             helper.position($slider, currentSliderPos);
         }
-
+        
         function updateSliderSize() {
             var scrollSize, targetElementRatio;
             sliderBedSize = helper.size($sliderBed);
@@ -171,21 +171,21 @@ $.fn.scrollbar = function(targetElement, isHorizontal, minSliderSize) {
             //Set scroll to its correct position after target size change
             setSliderPosFromTarget();
         }
-
+        
         updateSliderSize();
-
+        
         setInterval(function() {
             updateSliderSize();
         }, 100);
-
+        
         function disableSelection() {
             $('*').attr('unselectable', 'on').addClass('unselectable')
-                .addClass('default-cursor');
+            .addClass('default-cursor');
         }
-
+        
         function enableSelection() {
             $('*').removeAttr('unselectable').removeClass('unselectable')
-                .removeClass('default-cursor');
+            .removeClass('default-cursor');
         }
 
         //fetch the slider pos for resizing
@@ -195,13 +195,13 @@ $.fn.scrollbar = function(targetElement, isHorizontal, minSliderSize) {
             disableSelection();
             return event.preventDefault();
         });
-
+        
         function disableScrolling() {
             enableSelection();
             mousePosRelativeToSlider = null;
             stopArrowMouseDown = true;
         }
-
+        
         $body.on('mouseup touchend', disableScrolling).
         on('mousemove touchmove', function(event) {
             var newSliderPos;
@@ -221,10 +221,10 @@ $.fn.scrollbar = function(targetElement, isHorizontal, minSliderSize) {
             newSliderPos = helper.offsetEvent(event) - mousePosRelativeToSlider;
             setSliderPos(newSliderPos);
         });
-
+        
         function setSliderPos(sliderPos) {
             var edgeReached = false;
-
+            
             if (sliderPos < 0) {
                 sliderPos = 0;
                 edgeReached = true;
@@ -235,27 +235,27 @@ $.fn.scrollbar = function(targetElement, isHorizontal, minSliderSize) {
                 }
             }
             helper.position($slider, sliderPos);
-
+            
             function updateTargetScroll(sliderPos) {
                 var sliderCalculatedPos = sliderPos / (sliderBedSize - sliderSize);
                 helper.scroll($targetElement, (helper.scrollSize($targetElement) - helper.size($targetElement)) * sliderCalculatedPos);
             }
-
+            
             updateTargetScroll(sliderPos);
             currentSliderPos = sliderPos;
             return edgeReached;
         }
-
+        
         function decreaseArrow() {
             var newSliderPos = helper.positionRelParent($slider) - SLIDER_ARROW_AMOUNT;
             return setSliderPos(newSliderPos);
         }
-
+        
         function increaseArrow() {
             var newSliderPos = helper.positionRelParent($slider) + SLIDER_ARROW_AMOUNT;
             return setSliderPos(newSliderPos);
         }
-
+        
         $scrollbar.find('.left-arrow, .top-arrow').on('mousedown touchstart', function() {
             var interval;
             stopArrowMouseDown = false;
@@ -266,7 +266,7 @@ $.fn.scrollbar = function(targetElement, isHorizontal, minSliderSize) {
                 }
             }, CONST_MOVE_MIL);
         });
-
+        
         $scrollbar.find('.right-arrow, .bottom-arrow').on('mousedown touchstart', function() {
             var interval;
             stopArrowMouseDown = false;
@@ -277,10 +277,10 @@ $.fn.scrollbar = function(targetElement, isHorizontal, minSliderSize) {
                 }
             }, CONST_MOVE_MIL);
         });
-
+        
         $targetElement.mousewheel(function(event) {
             var delta = helper.mousewheelDelta(event);
-
+            
             if (!isHorizontal) {
                 //detect invert scrolling on mac safari
                 if (event.originalEvent.webkitDirectionInvertedFromDevice) {
@@ -298,21 +298,21 @@ $.fn.scrollbar = function(targetElement, isHorizontal, minSliderSize) {
             setSliderPos(currentSliderPos + delta * (event.deltaFactor / 4));
             event.preventDefault();
         });
-
+        
         function targetElementTouchInit() {
             var touchPos, eventForSwipeLatest, eventForSwipeOneBeforeLatest, swipIntervalHandel;
-
+            
             function inertiaAnimator(velocity) {
-                var MILLISECOND_PER_FRAME = 16,
-                    FRICTION_COEFFICIENT = 0.95,
-                    distancePerFrame;
-
+                var MILLISECOND_PER_FRAME = 16, 
+                FRICTION_COEFFICIENT = 0.95, 
+                distancePerFrame;
+                
                 distancePerFrame = velocity * MILLISECOND_PER_FRAME;
-
+                
                 clearInterval(swipIntervalHandel);
                 swipIntervalHandel = setInterval(function() {
                     var pos;
-
+                    
                     distancePerFrame *= FRICTION_COEFFICIENT;
                     if (distancePerFrame < 1 && distancePerFrame > -1) {
                         clearInterval(swipIntervalHandel);
@@ -345,7 +345,7 @@ $.fn.scrollbar = function(targetElement, isHorizontal, minSliderSize) {
                     helper.scroll($targetElement, helper.scroll($targetElement) - touchPos + originaltouchPos);
                     setSliderPosFromTarget();
                     event.preventDefault();
-
+                    
                     eventForSwipeOneBeforeLatest = eventForSwipeLatest;
                     eventForSwipeLatest = {
                         position: touchPos,
@@ -360,19 +360,30 @@ $.fn.scrollbar = function(targetElement, isHorizontal, minSliderSize) {
                 touchPos = undefined;
             });
         }
-
+        
         targetElementTouchInit();
     }
     this.each(function() {
-        var htmlUrl, $element = $(this);
-        if (isHorizontal === true) {
-            htmlUrl = './scrollbar/scrollbar-horizontal.html';
+        var html, $element = $(this);
+        if (isHorizontal) {
+            html = '<div class="scrollbar horizontal">' + 
+            '<div class="left-arrow arrow"></div>' + 
+            '<div class="right-arrow arrow"></div>' + 
+            '<div class="slider-bed">' + 
+            '<div class="slider"></div>' + 
+            '</div>' + 
+            '</div>';
         } else {
-            htmlUrl = './scrollbar/scrollbar-vertical.html';
+            html = '<div class="scrollbar vertical">' + 
+            '<div class="top-arrow arrow"></div>' + 
+            '<div class="slider-bed">' + 
+            '<div class="slider"></div>' + 
+            '</div>' + 
+            '<div class="bottom-arrow arrow"></div>' + 
+            '</div>';
         }
-        
-        $element.load(htmlUrl);
+        $element.html(html);        
     });
-
+    
     return this;
 };

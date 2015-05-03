@@ -5,7 +5,6 @@ $.fn.scrollbar = function(targetElement, isHorizontal, minSliderSize) {
 
     function scrollbar($scrollbar) {
         var $sliderBed = $scrollbar.find('.slider-bed'),
-            $mainDiv,
             $slider = $sliderBed.find('.slider'),
             SLIDER_ARROW_AMOUNT = 15,
             CONST_MOVE_MIL = 75,
@@ -156,7 +155,7 @@ $.fn.scrollbar = function(targetElement, isHorizontal, minSliderSize) {
         }
 
         function updateSliderSize() {
-            var scrollSize, targetElementRatio, targetSliderCalculatedPos;
+            var scrollSize, targetElementRatio;
             sliderBedSize = helper.size($sliderBed);
             scrollSize = helper.scrollSize($targetElement);
             targetElementRatio = helper.size($targetElement) / scrollSize;
@@ -367,16 +366,12 @@ $.fn.scrollbar = function(targetElement, isHorizontal, minSliderSize) {
     this.each(function() {
         var htmlUrl, $element = $(this);
         if (isHorizontal === true) {
-            htmlUrl = 'scrollbar/scrollbar-horizontal.html';
+            htmlUrl = './scrollbar/scrollbar-horizontal.html';
         } else {
-            htmlUrl = 'scrollbar/scrollbar-vertical.html';
+            htmlUrl = './scrollbar/scrollbar-vertical.html';
         }
-
-        $.get(htmlUrl)
-            .success(function(html) {
-                $element.html(html);
-                scrollbar($element);
-            });
+        
+        $element.load(htmlUrl);
     });
 
     return this;

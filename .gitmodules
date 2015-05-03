@@ -1,4 +1,4 @@
 [submodule "lib/flexible-scrollbar"]
 	path = lib/flexible-scrollbar
-	url = git@github.com:ayeressian/flexible-scrollbar.git
+	url = https://github.com/ayeressian/flexible-scrollbar.git
 	branch = master

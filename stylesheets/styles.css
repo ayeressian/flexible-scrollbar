@@ -350,11 +350,17 @@ footer {
     height: 300px;
     margin-top: 10px;
 }
+.vert-scrollbar-container.big {
+    height: 390px;
+}
 
 .horiz-scrollbar-container {
     width: 300px;
     margin-left: 10px;
     margin-right: 10px;
+}
+.horiz-scrollbar-container.big {
+    width: 390px;
 }
 
 .no-wrap {
@@ -364,6 +370,9 @@ footer {
 #flexible-scrollbar-target-vert {
     margin-right: 0;
     width: 288px;
+}
+#flexible-scrollbar-target-vert.big {
+    height: 388px;
 }
 
 .button-container {
@@ -389,8 +398,29 @@ footer {
     height: 288px;
 }
 
+#flexible-scrollbar-target-horiz.big {
+    width: 388px;
+}
+
 .clear-both {
     clear: both;
+}
+
+#distant-container {
+    position: relative;
+}
+.vert-scrollbar-container-distant {
+    height: 400px;
+    position: absolute;
+    left: 500px;
+    top: 23px;
+}
+
+#default-browser-vert.big {
+    height: 388px;
+}
+#default-browser-horiz.big {
+    width: 388px;
 }
 /* non template styles END */
 

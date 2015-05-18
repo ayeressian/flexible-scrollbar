@@ -422,6 +422,29 @@ footer {
 #default-browser-horiz.big {
     width: 388px;
 }
+
+.vert-scrollbar-container-style {
+    height: 300px;
+    padding-top: 10px;
+    float: left;
+}
+
+#flexible-scrollbar-target-vert-style {
+    margin-left: 0;
+}
+
+.vert-scrollbar-container-style .scrollbar.vertical {
+    width: 20px;
+}
+
+.vert-scrollbar-container-style .scrollbar.vertical .slider-bed {
+    background-color: #FAA;
+}
+
+.vert-scrollbar-container-style .scrollbar.vertical .slider-bed .slider {
+    background-color: #AAF;
+}
+
 /* non template styles END */
 
 @media print, screen and (max-width: 960px) {

@@ -2,6 +2,7 @@ $(function() {
     $('#scrollbar-vert').scrollbar($('#flexible-scrollbar-target-vert'));
     $('#scrollbar-horiz').scrollbar($('#flexible-scrollbar-target-horiz'), true);
     $('#scrollbar-vert-distant').scrollbar($('#flexible-scrollbar-target-vert-distant'));
+    $('#scrollbar-vert-style').scrollbar($('#flexible-scrollbar-target-vert-style'));
     $('#increase-inner').on('click', function() {
         $('.red').removeClass('hidden');
     });

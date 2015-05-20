@@ -320,6 +320,7 @@ a.buttons:hover {
 
 section {
     width: 650px;
+    clear: both;
     float: right;
     padding-bottom: 50px;
 }
@@ -413,7 +414,7 @@ footer {
     height: 400px;
     position: absolute;
     left: 500px;
-    top: 23px;
+    top: -42px;
 }
 
 #default-browser-vert.big {
@@ -443,6 +444,10 @@ footer {
 
 .vert-scrollbar-container-style .scrollbar.vertical .slider-bed .slider {
     background-color: #AAF;
+}
+
+footer {
+    clear: both;
 }
 
 /* non template styles END */

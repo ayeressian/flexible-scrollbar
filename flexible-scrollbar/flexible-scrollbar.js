@@ -264,6 +264,7 @@ $.fn.scrollbar = function(targetElement, isHorizontal, minSliderSize) {
             var interval;
             stopArrowMouseDown = false;
             decreaseArrow();
+            disableSelection();
             interval = setInterval(function() {
                 if (stopArrowMouseDown || decreaseArrow()) {
                     clearInterval(interval);
@@ -275,6 +276,7 @@ $.fn.scrollbar = function(targetElement, isHorizontal, minSliderSize) {
             var interval;
             stopArrowMouseDown = false;
             increaseArrow();
+            disableSelection();            
             interval = setInterval(function() {
                 if (stopArrowMouseDown || increaseArrow()) {
                     clearInterval(interval);

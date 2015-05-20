@@ -370,7 +370,6 @@ footer {
 
 #flexible-scrollbar-target-vert {
     margin-right: 0;
-    width: 288px;
 }
 #flexible-scrollbar-target-vert.big {
     height: 388px;
@@ -448,6 +447,14 @@ footer {
 
 footer {
     clear: both;
+}
+
+#style-container {
+    width: 330px;
+}
+
+#flexible-scrollbar-vert {
+    width: 330px;
 }
 
 /* non template styles END */

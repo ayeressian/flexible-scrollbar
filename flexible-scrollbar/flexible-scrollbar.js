@@ -65,7 +65,7 @@ $.fn.scrollbar = function(targetElement, isHorizontal, minSliderSize) {
                             offsetY = touch.pageY - $($event.target).offset().top;
                             return offsetY;
                         }
-                        return $event.offsetY;
+                        return $event.offsetY || $event.pageY - $($event.target).offset().top;                        
                     },
                     offsetElement: function($element) {
                         return $element.offset().top;
@@ -122,7 +122,7 @@ $.fn.scrollbar = function(targetElement, isHorizontal, minSliderSize) {
                         offsetX = touch.pageX - $($event.target).offset().left;
                         return offsetX;
                     }
-                    return $event.offsetX;
+                    return $event.offsetX || $event.pageX - $($event.target).offset().left;                                    
                 },
                 offsetElement: function($element) {
                     return $element.offset().left;
@@ -302,8 +302,8 @@ $.fn.scrollbar = function(targetElement, isHorizontal, minSliderSize) {
                 }
                 edgeReached = setSliderPos(currentSliderPos + delta * (event.deltaFactor / 4));
                 if (!edgeReached) {
-                    event.preventDefault();    
-                }                
+                    event.preventDefault();
+                }
             });
         }
         

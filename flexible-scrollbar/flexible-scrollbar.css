@@ -46,7 +46,11 @@
 .scrollbar.horizontal .slider:hover {
     background-color: #999;
 }
+
+
 /*HORIZONTAL END*/
+
+
 /*VERTICAL*/
 
 .scrollbar.vertical {
@@ -97,6 +101,8 @@
 .scrollbar.vertical .slider:hover {
     background-color: #999;
 }
+
+
 /*VERTICAL END*/
 
 .unselectable {

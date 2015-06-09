@@ -232,6 +232,7 @@ $.fn.scrollbar = function(targetElement, isHorizontal, minSliderSize) {
             return self._setSliderPos(newSliderPos);
         };
 
+        //TODO move to separate class
         self._targetElementTouchInit = function() {
             var touchPos, eventForSwipeLatest, eventForSwipeOneBeforeLatest, swipIntervalHandel;
 

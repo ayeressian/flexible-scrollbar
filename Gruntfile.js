@@ -37,6 +37,9 @@ module.exports = function(grunt) {
         },
         cssmin: {
             target: {
+                options: {
+                    sourceMap: true
+                },
                 files: {
                     'flexible-scrollbar/flexible-scrollbar.min.css': ['flexible-scrollbar/flexible-scrollbar.css']
                 }
@@ -44,7 +47,7 @@ module.exports = function(grunt) {
         },
         touch: {
             // cssmin issue have to create files manually
-            src: ['flexible-scrollbar/flexible-scrollbar.min.css', 'flexible-scrollbar/flexible-scrollbar.min.css.map']
+            src: ['flexible-scrollbar/flexible-scrollbar.min.css']
         }
     });
 

@@ -37,13 +37,14 @@ module.exports = function(grunt) {
         },
         cssmin: {
             target: {
-                options: {
-                    sourceMap: true
-                },
                 files: {
-                    'flexible-scrollbar/flexible-scrollbar.min.css': ['flexible-scrollbar/flexible-scrollbar.min.css']
+                    'flexible-scrollbar/flexible-scrollbar.min.css': ['flexible-scrollbar/flexible-scrollbar.css']
                 }
             }
+        },
+        touch: {
+            // cssmin issue have to create files manually
+            src: ['flexible-scrollbar/flexible-scrollbar.min.css', 'flexible-scrollbar/flexible-scrollbar.min.css.map']
         }
     });
 
@@ -51,8 +52,9 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-jsbeautifier');
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-contrib-uglify');
+    grunt.loadNpmTasks('grunt-touch');
     grunt.loadNpmTasks('grunt-contrib-cssmin');
 
-    grunt.registerTask('default', ['jshint', 'jsbeautifier', 'uglify', 'cssmin']);
+    grunt.registerTask('default', ['jshint', 'jsbeautifier', 'uglify', 'touch', 'cssmin']);
     grunt.registerTask('pre-commit', ['jshint']);
 };

@@ -32,6 +32,25 @@ $.fn.scrollbar = function(targetElement, isHorizontal, minSliderSize) {
                 type === 'touchmove' ||
                 type === 'touchend' ||
                 type === 'touchcancel';
+        },
+
+        disableSelection: function() {
+            $('*').attr('unselectable', 'on').addClass('unselectable')
+                .addClass('default-cursor');
+        },
+
+        enableSelection: function() {
+            $('*').removeAttr('unselectable').removeClass('unselectable')
+                .removeClass('default-cursor');
+        },
+        
+        isMac: function() {
+            return navigator.platform.toUpperCase().indexOf('MAC') >= 0;
+        },
+
+        isNaturalScrolling: function() {
+            return event.originalEvent.webkitDirectionInvertedFromDevice === true || 
+                (event.originalEvent.webkitDirectionInvertedFromDevice === undefined && this.isMac());
         }
     };
 
@@ -182,18 +201,8 @@ $.fn.scrollbar = function(targetElement, isHorizontal, minSliderSize) {
             self._setSliderPosFromTarget();
         };
 
-        self._disableSelection = function() {
-            $('*').attr('unselectable', 'on').addClass('unselectable')
-                .addClass('default-cursor');
-        };
-
-        self._enableSelection = function() {
-            $('*').removeAttr('unselectable').removeClass('unselectable')
-                .removeClass('default-cursor');
-        };
-
         self._disableScrolling = function() {
-            self._enableSelection();
+            util.enableSelection();
             self._mousePosRelativeToSlider = null;
             self._stopArrowMouseDown = true;
         };
@@ -295,22 +304,36 @@ $.fn.scrollbar = function(targetElement, isHorizontal, minSliderSize) {
             });
         };
 
-        self._init = function() {
-            if (minSliderSize === undefined || minSliderSize === null) {
-                minSliderSize = self._MINIMUM_SLIDER_SIZE;
+        self._initMouseWheel = function() {
+            if ($targetElement.mousewheel) {
+                $targetElement.mousewheel(function(event) {
+                    var delta = self._mousewheelDelta(event),
+                        edgeReached;
+
+                    if (!isHorizontal) {
+                        //detect invert scrolling on mac safari
+                        if (util.isNaturalScrolling) {
+                            delta *= -1;
+                        }
+                    } else {
+                        if (!util.isNaturalScrolling) {
+                            delta *= -1;
+                        }
+                    }
+                    edgeReached = self._setSliderPos(self._currentSliderPos + delta * (event.deltaFactor / 4));
+                    if (!edgeReached) {
+                        event.preventDefault();
+                    }
+                });
             }
+        };
 
-            self._updateSliderSize();
-
-            setInterval(function() {
-                self._updateSliderSize();
-            }, 100);
-
+        self._initEvents = function() {
             //fetch the slider pos for resizing
             self._$slider.on('mousedown touchstart', function(event) {
                 self._mousePosRelativeToSlider = self._offsetEvent(event);
                 event.stopPropagation();
-                self._disableSelection();
+                util.disableSelection();
                 return event.preventDefault();
             });
 
@@ -318,7 +341,7 @@ $.fn.scrollbar = function(targetElement, isHorizontal, minSliderSize) {
             on('mousemove touchmove', function(event) {
                 var newSliderPos;
                 if (self._mousePosRelativeToSlider) {
-                    self._disableSelection();
+                    util.disableSelection();
                     newSliderPos = self._page(event) - self._offsetElement(self._$sliderBed) - self._mousePosRelativeToSlider;
                     self._setSliderPos(newSliderPos);
                     return event.preventDefault();
@@ -338,7 +361,7 @@ $.fn.scrollbar = function(targetElement, isHorizontal, minSliderSize) {
                 var interval;
                 self._stopArrowMouseDown = false;
                 self._decreaseArrow();
-                self._disableSelection();
+                util.disableSelection();
                 interval = setInterval(function() {
                     if (self._stopArrowMouseDown || self._decreaseArrow()) {
                         clearInterval(interval);
@@ -350,41 +373,29 @@ $.fn.scrollbar = function(targetElement, isHorizontal, minSliderSize) {
                 var interval;
                 self._stopArrowMouseDown = false;
                 self._increaseArrow();
-                self._disableSelection();
+                util.disableSelection();
                 interval = setInterval(function() {
                     if (self._stopArrowMouseDown || self._increaseArrow()) {
                         clearInterval(interval);
                     }
                 }, self._CONST_MOVE_MIL);
             });
+        };
 
-            if ($targetElement.mousewheel) {
-                $targetElement.mousewheel(function(event) {
-                    var delta = self._mousewheelDelta(event),
-                        edgeReached;
-
-                    if (!isHorizontal) {
-                        //detect invert scrolling on mac safari
-                        if (event.originalEvent.webkitDirectionInvertedFromDevice) {
-                            delta *= -1;
-                        } else if (navigator.platform.toUpperCase().indexOf('MAC') >= 0) {
-                            delta *= -1;
-                        }
-                    } else {
-                        if (event.originalEvent.webkitDirectionInvertedFromDevice === false) {
-                            delta *= -1;
-                        } else if (navigator.platform.toUpperCase().indexOf('MAC') < 0) {
-                            delta *= -1;
-                        }
-                    }
-                    edgeReached = self._setSliderPos(self._currentSliderPos + delta * (event.deltaFactor / 4));
-                    if (!edgeReached) {
-                        event.preventDefault();
-                    }
-                });
+        self._init = function() {
+            if (minSliderSize === undefined || minSliderSize === null) {
+                minSliderSize = self._MINIMUM_SLIDER_SIZE;
             }
 
+            self._updateSliderSize();
+
+            setInterval(function() {
+                self._updateSliderSize();
+            }, 100);
+            
+            self._initEvents();
             self._targetElementTouchInit();
+            self._initMouseWheel();
         };
 
         self._init();

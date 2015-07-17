@@ -35,7 +35,7 @@ $.fn.scrollbar = function(targetElement, isHorizontal, minSliderSize) {
         }
     };
 
-    var verticalHelper = {
+    var verticalOps = {
         _size: function($element, size) {
             if (size) {
                 return $element.height(size);
@@ -89,7 +89,7 @@ $.fn.scrollbar = function(targetElement, isHorizontal, minSliderSize) {
         }
     };
 
-    var horizontalHelper = {
+    var horizontalOps = {
         _size: function($element, size) {
             if (size) {
                 return $element.width(size);
@@ -232,35 +232,35 @@ $.fn.scrollbar = function(targetElement, isHorizontal, minSliderSize) {
             return self._setSliderPos(newSliderPos);
         };
 
-        //TODO move to separate class
+        self._touchInertiaAnimator = function(velocity) {
+            var MILLISECOND_PER_FRAME = 16,
+                FRICTION_COEFFICIENT = 0.95,
+                distancePerFrame;
+
+            distancePerFrame = velocity * MILLISECOND_PER_FRAME;
+
+            clearInterval(swipIntervalHandel);
+            swipIntervalHandel = setInterval(function() {
+                var pos;
+
+                distancePerFrame *= FRICTION_COEFFICIENT;
+                if (distancePerFrame < 1 && distancePerFrame > -1) {
+                    clearInterval(swipIntervalHandel);
+                    return;
+                }
+                pos = self._scroll($targetElement) - distancePerFrame;
+                if (pos < 0) {
+                    clearInterval(swipIntervalHandel);
+                    return;
+                }
+                self._scroll($targetElement, pos);
+                self._setSliderPosFromTarget();
+            }, MILLISECOND_PER_FRAME);
+        };
+
         self._targetElementTouchInit = function() {
             var touchPos, eventForSwipeLatest, eventForSwipeOneBeforeLatest, swipIntervalHandel;
 
-            function inertiaAnimator(velocity) {
-                var MILLISECOND_PER_FRAME = 16,
-                    FRICTION_COEFFICIENT = 0.95,
-                    distancePerFrame;
-
-                distancePerFrame = velocity * MILLISECOND_PER_FRAME;
-
-                clearInterval(swipIntervalHandel);
-                swipIntervalHandel = setInterval(function() {
-                    var pos;
-
-                    distancePerFrame *= FRICTION_COEFFICIENT;
-                    if (distancePerFrame < 1 && distancePerFrame > -1) {
-                        clearInterval(swipIntervalHandel);
-                        return;
-                    }
-                    pos = self._scroll($targetElement) - distancePerFrame;
-                    if (pos < 0) {
-                        clearInterval(swipIntervalHandel);
-                        return;
-                    }
-                    self._scroll($targetElement, pos);
-                    self._setSliderPosFromTarget();
-                }, MILLISECOND_PER_FRAME);
-            }
             $targetElement.on('touchstart', function(event) {
                 if (event.originalEvent.targetTouches.length === 1) {
                     //Clear any ongoing inertia animation
@@ -290,12 +290,12 @@ $.fn.scrollbar = function(targetElement, isHorizontal, minSliderSize) {
                 var timeDelta = eventForSwipeLatest.time - eventForSwipeOneBeforeLatest.time;
                 var posDelta = eventForSwipeLatest.position - eventForSwipeOneBeforeLatest.position;
                 var velocity = posDelta / timeDelta;
-                inertiaAnimator(velocity);
+                self._touchInertiaAnimator(velocity);
                 touchPos = undefined;
             });
         };
 
-        self.init = function() {
+        self._init = function() {
             if (minSliderSize === undefined || minSliderSize === null) {
                 minSliderSize = self._MINIMUM_SLIDER_SIZE;
             }
@@ -386,15 +386,17 @@ $.fn.scrollbar = function(targetElement, isHorizontal, minSliderSize) {
 
             self._targetElementTouchInit();
         };
+
+        self._init();
     }
 
     if (isHorizontal) {
-        Scrollbar.prototype = horizontalHelper;
+        Scrollbar.prototype = horizontalOps;
     } else {
-        Scrollbar.prototype = verticalHelper;
+        Scrollbar.prototype = verticalOps;
     }
 
-    (new Scrollbar()).init();
+    new Scrollbar();
 
 
     return this;

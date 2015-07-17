@@ -43,13 +43,13 @@ $.fn.scrollbar = function(targetElement, isHorizontal, minSliderSize) {
             $('*').removeAttr('unselectable').removeClass('unselectable')
                 .removeClass('default-cursor');
         },
-        
+
         isMac: function() {
             return navigator.platform.toUpperCase().indexOf('MAC') >= 0;
         },
 
         isNaturalScrolling: function() {
-            return event.originalEvent.webkitDirectionInvertedFromDevice === true || 
+            return event.originalEvent.webkitDirectionInvertedFromDevice === true ||
                 (event.originalEvent.webkitDirectionInvertedFromDevice === undefined && this.isMac());
         }
     };
@@ -392,7 +392,7 @@ $.fn.scrollbar = function(targetElement, isHorizontal, minSliderSize) {
             setInterval(function() {
                 self._updateSliderSize();
             }, 100);
-            
+
             self._initEvents();
             self._targetElementTouchInit();
             self._initMouseWheel();

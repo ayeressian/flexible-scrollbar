@@ -167,6 +167,7 @@ $.fn.scrollbar = function(targetElement, isHorizontal, minSliderSize) {
 
         self._$sliderBed = $scrollbar.find('.slider-bed');
         self._$slider = self._$sliderBed.find('.slider');
+        self._$body = $(document.body);
         self._SLIDER_ARROW_AMOUNT = 15;
         self._CONST_MOVE_MIL = 75;
         self._MINIMUM_SLIDER_SIZE = 40;
@@ -175,72 +176,69 @@ $.fn.scrollbar = function(targetElement, isHorizontal, minSliderSize) {
         self._mousePosRelativeToSlider = null;
         self._sliderBedSize = null;
         self._sliderSize = null;
-        self._$body = $(document.body);
 
-        self._setSliderPosFromTarget = function() {
-            var targetSliderCalculatedPos = self._scroll($targetElement) / (self._scrollSize($targetElement) - self._size($targetElement));
-            self._currentSliderPos = (self._sliderBedSize - self._sliderSize) * targetSliderCalculatedPos;
-            self._position(self._$slider, self._currentSliderPos);
-        };
-
-        self._updateSliderSize = function() {
-            var scrollSize, targetElementRatio;
-            self._sliderBedSize = self._size(self._$sliderBed);
-            scrollSize = self._scrollSize($targetElement);
-            targetElementRatio = self._size($targetElement) / scrollSize;
-            if (targetElementRatio >= 1 && targetElementRatio <= 0) {
-                $scrollbar.css('display', 'none');
-            }
-            self._sliderSize = self._sliderBedSize * targetElementRatio;
-            if (self._sliderSize < minSliderSize) {
-                self._sliderSize = minSliderSize;
-            }
-            self._size(self._$slider, self._sliderSize);
-
-            //Set scroll to its correct position after target size change
-            self._setSliderPosFromTarget();
-        };
-
-        self._disableScrolling = function() {
-            util.enableSelection();
-            self._mousePosRelativeToSlider = null;
-            self._stopArrowMouseDown = true;
-        };
-
-        self._setSliderPos = function(sliderPos) {
-            var edgeReached = false;
-
-            if (sliderPos < 0) {
-                sliderPos = 0;
-                edgeReached = true;
-            } else {
-                if (sliderPos > self._sliderBedSize - self._sliderSize) {
-                    sliderPos = self._sliderBedSize - self._sliderSize;
-                    edgeReached = true;
+        self._operations = {
+            setSliderPosFromTarget: function() {
+                var targetSliderCalculatedPos = self._scroll($targetElement) / (self._scrollSize($targetElement) - self._size($targetElement));
+                self._currentSliderPos = (self._sliderBedSize - self._sliderSize) * targetSliderCalculatedPos;
+                self._position(self._$slider, self._currentSliderPos);
+            },
+            updateSliderSize: function() {
+                var scrollSize, targetElementRatio;
+                self._sliderBedSize = self._size(self._$sliderBed);
+                scrollSize = self._scrollSize($targetElement);
+                targetElementRatio = self._size($targetElement) / scrollSize;
+                if (targetElementRatio >= 1 && targetElementRatio <= 0) {
+                    $scrollbar.css('display', 'none');
                 }
+                self._sliderSize = self._sliderBedSize * targetElementRatio;
+                if (self._sliderSize < minSliderSize) {
+                    self._sliderSize = minSliderSize;
+                }
+                self._size(self._$slider, self._sliderSize);
+
+                //Set scroll to its correct position after target size change
+                this.setSliderPosFromTarget();
+            },
+            disableScrolling: function() {
+                util.enableSelection();
+                self._mousePosRelativeToSlider = null;
+                self._stopArrowMouseDown = true;
+            },
+            setSliderPos: function(sliderPos) {
+                var edgeReached = false;
+
+                if (sliderPos < 0) {
+                    sliderPos = 0;
+                    edgeReached = true;
+                } else {
+                    if (sliderPos > self._sliderBedSize - self._sliderSize) {
+                        sliderPos = self._sliderBedSize - self._sliderSize;
+                        edgeReached = true;
+                    }
+                }
+                self._position(self._$slider, sliderPos);
+
+                function updateTargetScroll(sliderPos) {
+                    var sliderCalculatedPos = sliderPos / (self._sliderBedSize - self._sliderSize);
+                    self._scroll($targetElement, (self._scrollSize($targetElement) - self._size($targetElement)) * sliderCalculatedPos);
+                }
+
+                updateTargetScroll(sliderPos);
+                self._currentSliderPos = sliderPos;
+                return edgeReached;
+            },
+            decreaseArrow: function() {
+                var newSliderPos = self._positionRelParent(self._$slider) - self._SLIDER_ARROW_AMOUNT;
+                return this.setSliderPos(newSliderPos);
+            },
+            increaseArrow: function() {
+                var newSliderPos = self._positionRelParent(self._$slider) + self._SLIDER_ARROW_AMOUNT;
+                return this.setSliderPos(newSliderPos);
             }
-            self._position(self._$slider, sliderPos);
-
-            function updateTargetScroll(sliderPos) {
-                var sliderCalculatedPos = sliderPos / (self._sliderBedSize - self._sliderSize);
-                self._scroll($targetElement, (self._scrollSize($targetElement) - self._size($targetElement)) * sliderCalculatedPos);
-            }
-
-            updateTargetScroll(sliderPos);
-            self._currentSliderPos = sliderPos;
-            return edgeReached;
         };
 
-        self._decreaseArrow = function() {
-            var newSliderPos = self._positionRelParent(self._$slider) - self._SLIDER_ARROW_AMOUNT;
-            return self._setSliderPos(newSliderPos);
-        };
-
-        self._increaseArrow = function() {
-            var newSliderPos = self._positionRelParent(self._$slider) + self._SLIDER_ARROW_AMOUNT;
-            return self._setSliderPos(newSliderPos);
-        };
-
+        //TODO: Change to css animation for better performance.
         self._touchInertiaAnimator = function(velocity) {
             var MILLISECOND_PER_FRAME = 16,
                 FRICTION_COEFFICIENT = 0.95,
@@ -263,11 +261,11 @@ $.fn.scrollbar = function(targetElement, isHorizontal, minSliderSize) {
                     return;
                 }
                 self._scroll($targetElement, pos);
-                self._setSliderPosFromTarget();
+                self._operations.setSliderPosFromTarget();
             }, MILLISECOND_PER_FRAME);
         };
 
-        self._targetElementTouchInit = function() {
+        self._initTouchEvents = function() {
             var touchPos, eventForSwipeLatest, eventForSwipeOneBeforeLatest, swipIntervalHandel;
 
             $targetElement.on('touchstart', function(event) {
@@ -286,7 +284,7 @@ $.fn.scrollbar = function(targetElement, isHorizontal, minSliderSize) {
                     originaltouchPos = touchPos;
                     touchPos = self._touchSinglePagePos(event);
                     self._scroll($targetElement, self._scroll($targetElement) - touchPos + originaltouchPos);
-                    self._setSliderPosFromTarget();
+                    self._operations.setSliderPosFromTarget();
                     event.preventDefault();
 
                     eventForSwipeOneBeforeLatest = eventForSwipeLatest;
@@ -320,7 +318,7 @@ $.fn.scrollbar = function(targetElement, isHorizontal, minSliderSize) {
                             delta *= -1;
                         }
                     }
-                    edgeReached = self._setSliderPos(self._currentSliderPos + delta * (event.deltaFactor / 4));
+                    edgeReached = self._operations.setSliderPos(self._currentSliderPos + delta * (event.deltaFactor / 4));
                     if (!edgeReached) {
                         event.preventDefault();
                     }
@@ -337,33 +335,33 @@ $.fn.scrollbar = function(targetElement, isHorizontal, minSliderSize) {
                 return event.preventDefault();
             });
 
-            self._$body.on('mouseup touchend', self._disableScrolling).
+            self._$body.on('mouseup touchend', self._operations.disableScrolling).
             on('mousemove touchmove', function(event) {
                 var newSliderPos;
                 if (self._mousePosRelativeToSlider) {
                     util.disableSelection();
                     newSliderPos = self._page(event) - self._offsetElement(self._$sliderBed) - self._mousePosRelativeToSlider;
-                    self._setSliderPos(newSliderPos);
+                    self._operations.setSliderPos(newSliderPos);
                     return event.preventDefault();
                 }
             }).
-            mouseleave(self._disableScrolling);
+            mouseleave(self._operations.disableScrolling);
 
             //jump click
             $scrollbar.find('.slider-bed').on('mousedown touchstart', function(event) {
                 var newSliderPos;
                 self._mousePosRelativeToSlider = self._size(self._$slider) / 2;
                 newSliderPos = self._offsetEvent(event) - self._mousePosRelativeToSlider;
-                self._setSliderPos(newSliderPos);
+                self._operations.setSliderPos(newSliderPos);
             });
 
             $scrollbar.find('.left-arrow, .top-arrow').on('mousedown touchstart', function() {
                 var interval;
                 self._stopArrowMouseDown = false;
-                self._decreaseArrow();
+                self._operations.decreaseArrow();
                 util.disableSelection();
                 interval = setInterval(function() {
-                    if (self._stopArrowMouseDown || self._decreaseArrow()) {
+                    if (self._stopArrowMouseDown || self._operations.decreaseArrow()) {
                         clearInterval(interval);
                     }
                 }, self._CONST_MOVE_MIL);
@@ -372,10 +370,10 @@ $.fn.scrollbar = function(targetElement, isHorizontal, minSliderSize) {
             $scrollbar.find('.right-arrow, .bottom-arrow').on('mousedown touchstart', function() {
                 var interval;
                 self._stopArrowMouseDown = false;
-                self._increaseArrow();
+                self._operations.increaseArrow();
                 util.disableSelection();
                 interval = setInterval(function() {
-                    if (self._stopArrowMouseDown || self._increaseArrow()) {
+                    if (self._stopArrowMouseDown || self._operations.increaseArrow()) {
                         clearInterval(interval);
                     }
                 }, self._CONST_MOVE_MIL);
@@ -387,14 +385,15 @@ $.fn.scrollbar = function(targetElement, isHorizontal, minSliderSize) {
                 minSliderSize = self._MINIMUM_SLIDER_SIZE;
             }
 
-            self._updateSliderSize();
+            self._operations.updateSliderSize();
 
+            //TODO: Find a better way to detect the container size change.
             setInterval(function() {
-                self._updateSliderSize();
+                self._operations.updateSliderSize();
             }, 100);
 
             self._initEvents();
-            self._targetElementTouchInit();
+            self._initTouchEvents();
             self._initMouseWheel();
         };
 

@@ -3,6 +3,11 @@
 
     /*Util*/
     var util = {
+        /**
+         * Determines whether the supplied event is touch related.
+         * @param  {Object} event
+         * @return {boolean}
+         */
         isTouchEvent: function(event) {
             var type;
             event = $.Event(event);
@@ -12,21 +17,43 @@
                 type === 'touchend' ||
                 type === 'touchcancel';
         },
+        /**
+         * Disables selection on the entire page.
+         */
         disableSelection: function() {
             $('*').attr('unselectable', 'on').addClass('unselectable')
                 .addClass('default-cursor');
         },
+        /**
+         * Enables selection on the entire page. Opposite of disableSelection.
+         */
         enableSelection: function() {
             $('*').removeAttr('unselectable').removeClass('unselectable')
                 .removeClass('default-cursor');
         },
+        /**
+         * Determines if the platform is Mac.
+         * @return {boolean}
+         */
         isMac: function() {
             return navigator.platform.toUpperCase().indexOf('MAC') >= 0;
         },
+        /**
+         * Determines whether event is natural scrolling. Natural scrolling is the default
+         * behaviour on OSX. On Safari the return value is 100% correct. On other browsers
+         * such as Firefox and Chrome the best guess is if the user is running Mac,
+         * which is inconclusive because this value can be changed from OSX preferences.
+         * @param  {Object} event
+         * @return {boolean}
+         */
         isNaturalScrolling: function(event) {
             return event.originalEvent.webkitDirectionInvertedFromDevice === true ||
                 (event.originalEvent.webkitDirectionInvertedFromDevice === undefined && this.isMac());
         },
+        /**
+         * Determines if the browser is Safari.
+         * @return {boolean}
+         */
         isSafari: function() {
             return navigator.userAgent.indexOf('Safari') != -1 && navigator.userAgent.indexOf('Chrome') == -1;
         }
@@ -34,6 +61,16 @@
     /*Util end*/
 
     /*Scrollbar*/
+    /**
+     * Abstract Scrollbar class
+     * @constructor
+     * @param {Object} $scrollbar         Jquery object that represents scrollbar.
+     * @param {Object} $targetElement     Jquery object that represents an element that should be scrolled.
+     * @param {Object} util               Common utilities object.
+     * @param {number} [minSliderSize=40] As the targetElement's content increases the scrollbar thumb size decreases,
+     *                                    but there is a minimum size that the thumb should have which is represented
+     *                                    by this parameter.
+     */
     function Scrollbar($scrollbar, $targetElement, util, minSliderSize) {
         this._$scrollbar = $scrollbar;
         this._$targetElement = $targetElement;
@@ -43,11 +80,6 @@
         this._$slider = this._$sliderBed.find('.slider');
         this._$body = $(document.body);
         this._stopArrowMouseDown = false;
-
-        //this._mousePosRelativeToSlider = null;
-        //this._sliderBedSize = null;
-        //this._sliderSize = null;
-        //this._currentSliderPos = null;
 
         if (!minSliderSize) {
             this._minSliderSize = Scrollbar._MINIMUM_SLIDER_SIZE;
@@ -61,8 +93,32 @@
         this._initTouchEvents();
         this._initMouseWheel();
     }
+
+    /**
+     * Determines the amount of scrollbar movement on each scrollbar arrow click.
+     * @constant
+     * @type {Number}
+     * @default
+     */
     Scrollbar._SLIDER_ARROW_AMOUNT = 15;
+
+    /**
+     * Determines the time interval of scrollbar arrow clicks perform action. In other words,
+     * this is the render frame interval of scrollbar arrow click and scrollbar thumb movement.
+     * @constant
+     * @type {Number}
+     * @default
+     */
     Scrollbar._CONST_MOVE_MIL = 75;
+
+    /**
+     * As the targetElement's content increases the scrollbar thumb size decreases,
+     * but there is a minimum size that the thumb should have which is represented by this
+     * variable.
+     * @constant
+     * @type {Number}
+     * @default
+     */
     Scrollbar._MINIMUM_SLIDER_SIZE = 40;
 
     Scrollbar.prototype._setSliderPosFromTarget = function() {

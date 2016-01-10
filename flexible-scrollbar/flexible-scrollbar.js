@@ -60,6 +60,107 @@
     };
     /*Util end*/
 
+    /*ScrollbarEngine*/
+    /**
+     * ScrollbarEngine contains all the calculation necessary for constructing
+     * scrollbar. Note it doesn't and shouldn't have any dependency to Jquery.
+     * It can be used for creating other types of scrollbars.
+     * @constructor
+     * @param {Object} mediator              Is responsible for comunications.
+     * @param {number} minSliderSize         As the container's content increases the scrollbar thumb size decreases,
+     *                                       but there is a minimum size that the thumb should have which is represented
+     *                                       by this parameter.
+     * @param {number} sliderArrowMoveAmount Determines the amount of scroll (thumb) movement on each scrollbar arrow click.
+     */
+    function ScrollbarEngine(mediator, minSliderSize, sliderArrowMoveAmount) {
+        this._mediator = mediator;
+        this._minSliderSize = minSliderSize;
+        this._sliderArrowMoveAmount = sliderArrowMoveAmount;
+    }
+
+    /**
+     * Sets the slider (thumb) position to current position insider thumb bed.
+     */
+    ScrollbarEngine.prototype.setSliderBasedOnContainerState = function() {
+        var targetSliderCalculatedPos = this._mediator.getContainerScrollPos() / (this._containerRealSize - this._containerSize);
+        this._currentSliderPos = (this._sliderBedSize - this._sliderSize) * targetSliderCalculatedPos;
+        this._mediator.setSliderPosition(this._currentSliderPos);
+    };
+
+    /**
+     * Update slider (thumb) size based on current container and content dimensions.
+     */
+    ScrollbarEngine.prototype.updateSliderSize = function() {
+        var containerRealSize, containerSize, containerRatio;
+        this._sliderBedSize = this._mediator.getSliderBedSize();
+        this._containerRealSize = this._mediator.getContainerRealSize();
+        this._containerSize = this._mediator.getContainerSize();
+        containerRatio = this._containerSize / this._containerRealSize;
+        if (containerRatio >= 1 && containerRatio <= 0) {
+            this._mediator.hideScrollbar();
+        }
+        this._sliderSize = this._sliderBedSize * containerRatio;
+        if (this._sliderSize < this._minSliderSize) {
+            this._sliderSize = this._minSliderSize;
+        }
+        this._mediator.setSliderSize(this._sliderSize);
+
+        //Set scroll to its correct position after target size change
+        this.setSliderBasedOnContainerState();
+    };
+
+    /**
+     * Sets new position for slider (thumb).
+     * @param  {number} sliderPos New slider position.
+     * @return {boolean}          Determines if thumb (slider) reached to end or beginning of slider bed.
+     */
+    ScrollbarEngine.prototype.setSliderPos = function(sliderPos) {
+        var edgeReached = false,
+            sliderCalculatedPos;
+
+        if (sliderPos < 0) {
+            sliderPos = 0;
+            edgeReached = true;
+        } else if (sliderPos > this._sliderBedSize - this._sliderSize) {
+            sliderPos = this._sliderBedSize - this._sliderSize;
+            edgeReached = true;
+        }
+
+        this._mediator.setSliderPosition(sliderPos);
+
+        sliderCalculatedPos = sliderPos / (this._sliderBedSize - this._sliderSize);
+        this._mediator.scrollContainer((this._containerRealSize - this._containerSize) * sliderCalculatedPos);
+        this._currentSliderPos = sliderPos;
+        return edgeReached;
+    };
+
+    /**
+     * Decreases current slider position.
+     * @return {boolean} If the slider reached to the end or beginning of slider bed.
+     */
+    ScrollbarEngine.prototype.decreaseArrow = function() {
+        var newSliderPos = this._currentSliderPos - this._sliderArrowMoveAmount;
+        return this.setSliderPos(newSliderPos);
+    };
+
+    /**
+     * Increases current slider position.
+     * @return {boolean} If the slider reached to the end or beginning of slider bed.
+     */
+    ScrollbarEngine.prototype.increaseArrow = function() {
+        var newSliderPos = this._currentSliderPos + this._sliderArrowMoveAmount;
+        return this.setSliderPos(newSliderPos);
+    };
+
+    /**
+     * Getter for currentSliderPos.
+     * @return {number} Current slider pos.
+     */
+    ScrollbarEngine.prototype.getCurrentSliderPos = function() {
+        return this._currentSliderPos;
+    };
+    /*ScrollbarEngine end*/
+
     /*Scrollbar*/
     /**
      * Abstract Scrollbar class
@@ -82,18 +183,32 @@
         if (!minSliderSize) {
             this._minSliderSize = Scrollbar._MINIMUM_SLIDER_SIZE;
         }
-        this._updateSliderSize();
+
+        var mediator = {
+            getContainerScrollPos: this._getContainerScrollPos.bind(this),
+            setSliderPosition: this._setSliderPosition.bind(this),
+            getSliderBedSize: this._getSliderBedSize.bind(this),
+            getContainerRealSize: this._getContainerRealSize.bind(this),
+            getContainerSize: this._getContainerSize.bind(this),
+            hideScrollbar: this._hideScrollbar.bind(this),
+            setSliderSize: this._setSliderSize.bind(this),
+            scrollContainer: this._scrollContainer.bind(this)
+        };
+
+        this.scrollbarEngine = new ScrollbarEngine(mediator, this._minSliderSize, Scrollbar._SLIDER_ARROW_AMOUNT);
+
+        this.scrollbarEngine.updateSliderSize();
         //TODO: Find a better way to detect the container size change.
-        setInterval(function(self) {
-            self._updateSliderSize();
-        }, 100, this);
+        setInterval(function() {
+            this.scrollbarEngine.updateSliderSize();
+        }.bind(this), 100);
         this._initEvents();
         this._initTouchEvents();
         this._initMouseWheel();
     }
 
     /**
-     * Determines the amount of scrollbar movement on each scrollbar arrow click.
+     * Determines the amount of scroll (thumb) movement on each scrollbar arrow click.
      * @constant
      * @type {Number}
      * @static
@@ -122,36 +237,29 @@
      */
     Scrollbar._MINIMUM_SLIDER_SIZE = 40;
 
-    /**
-     * Sets the slider (thumb) position to current position insider thumb bed.
-     * @private
-     */
-    Scrollbar.prototype._setSliderPosFromTarget = function() {
-        var targetSliderCalculatedPos = this._scroll(this._$targetElement) / (this._scrollSize(this._$targetElement) - this._size(this._$targetElement));
-        this._currentSliderPos = (this._sliderBedSize - this._sliderSize) * targetSliderCalculatedPos;
-        this._position(this._$slider, this._currentSliderPos);
+    Scrollbar.prototype._getContainerScrollPos = function() {
+        return this._scroll(this._$targetElement);
     };
-
-    /**
-     * Update slider (thumb) size based on current container and content dimensions.
-     * @private
-     */
-    Scrollbar.prototype._updateSliderSize = function() {
-        var scrollSize, targetElementRatio;
-        this._sliderBedSize = this._size(this._$sliderBed);
-        scrollSize = this._scrollSize(this._$targetElement);
-        targetElementRatio = this._size(this._$targetElement) / scrollSize;
-        if (targetElementRatio >= 1 && targetElementRatio <= 0) {
-            this._$scrollbar.css('display', 'none');
-        }
-        this._sliderSize = this._sliderBedSize * targetElementRatio;
-        if (this._sliderSize < this._minSliderSize) {
-            this._sliderSize = this._minSliderSize;
-        }
-        this._size(this._$slider, this._sliderSize);
-
-        //Set scroll to its correct position after target size change
-        this._setSliderPosFromTarget();
+    Scrollbar.prototype._setSliderPosition = function(position) {
+        this._position(this._$slider, position);
+    };
+    Scrollbar.prototype._getSliderBedSize = function() {
+        return this._size(this._$sliderBed);
+    };
+    Scrollbar.prototype._getContainerRealSize = function() {
+        return this._scrollSize(this._$targetElement);
+    };
+    Scrollbar.prototype._getContainerSize = function() {
+        return this._size(this._$targetElement);
+    };
+    Scrollbar.prototype._hideScrollbar = function() {
+        this._$scrollbar.css('display', 'none');
+    };
+    Scrollbar.prototype._setSliderSize = function(size) {
+        this._size(this._$slider, size);
+    };
+    Scrollbar.prototype._scrollContainer = function(position) {
+        this._scroll(this._$targetElement, position);
     };
 
     /**
@@ -162,53 +270,6 @@
         util.enableSelection();
         this._mousePosRelativeToSlider = null;
         this._stopArrowMouseDown = true;
-    };
-
-    /**
-     * Sets new position for slider (thumb).
-     * @private
-     * @param  {number} sliderPos New slider position.
-     * @return {boolean}          Determines if thumb (slider) reached to end or beginning of slider bed.
-     */
-    Scrollbar.prototype._setSliderPos = function(sliderPos) {
-        var edgeReached = false,
-            sliderCalculatedPos;
-
-        if (sliderPos < 0) {
-            sliderPos = 0;
-            edgeReached = true;
-        } else {
-            if (sliderPos > this._sliderBedSize - this._sliderSize) {
-                sliderPos = this._sliderBedSize - this._sliderSize;
-                edgeReached = true;
-            }
-        }
-        this._position(this._$slider, sliderPos);
-
-        sliderCalculatedPos = sliderPos / (this._sliderBedSize - this._sliderSize);
-        this._scroll(this._$targetElement, (this._scrollSize(this._$targetElement) - this._size(this._$targetElement)) * sliderCalculatedPos);
-        this._currentSliderPos = sliderPos;
-        return edgeReached;
-    };
-
-    /**
-     * Decreases current slider position.
-     * @private
-     * @return {boolean} If the slider reached to the end or beginning of slider bed.
-     */
-    Scrollbar.prototype._decreaseArrow = function() {
-        var newSliderPos = this._positionRelParent(this._$slider) - Scrollbar._SLIDER_ARROW_AMOUNT;
-        return this._setSliderPos(newSliderPos);
-    };
-
-    /**
-     * Increases current slider position.
-     * @private
-     * @return {boolean} If the slider reached to the end or beginning of slider bed.
-     */
-    Scrollbar.prototype._increaseArrow = function() {
-        var newSliderPos = this._positionRelParent(this._$slider) + Scrollbar._SLIDER_ARROW_AMOUNT;
-        return this._setSliderPos(newSliderPos);
     };
 
     /**
@@ -241,7 +302,7 @@
                 return;
             }
             self._scroll(self._$targetElement, pos);
-            self._setSliderPosFromTarget();
+            self._scrollbarEngine.setSliderBasedOnContainerState();
         }, MILLISECOND_PER_FRAME, this);
     };
 
@@ -270,7 +331,7 @@
                 originaltouchPos = touchPos;
                 touchPos = this._touchSinglePagePos(event);
                 this._scroll(this._$targetElement, this._scroll(this._$targetElement) - touchPos + originaltouchPos);
-                this._setSliderPosFromTarget();
+                this._scrollbarEngine.setSliderBasedOnContainerState();
                 event.preventDefault();
 
                 eventForSwipeOneBeforeLatest = eventForSwipeLatest;
@@ -305,7 +366,7 @@
                 } else {
                     delta *= -this._mousewheelOrientation();
                 }
-                edgeReached = this._setSliderPos(this._currentSliderPos + delta * (event.deltaFactor / 4));
+                edgeReached = this.scrollbarEngine.setSliderPos(this.scrollbarEngine.getCurrentSliderPos() + delta * (event.deltaFactor / 4));
                 if (!edgeReached) {
                     event.preventDefault();
                 }
@@ -332,7 +393,7 @@
             if (this._mousePosRelativeToSlider) {
                 util.disableSelection();
                 newSliderPos = this._page(event) - this._offsetElement(this._$sliderBed) - this._mousePosRelativeToSlider;
-                this._setSliderPos(newSliderPos);
+                this.scrollbarEngine.setSliderPos(newSliderPos);
                 return event.preventDefault();
             }
         }, this)).
@@ -343,31 +404,31 @@
             var newSliderPos;
             this._mousePosRelativeToSlider = this._size(this._$slider) / 2;
             newSliderPos = this._offsetEvent(event) - this._mousePosRelativeToSlider;
-            this._setSliderPos(newSliderPos);
+            this.scrollbarEngine.setSliderPos(newSliderPos);
         }, this));
 
         this._$scrollbar.find('.left-arrow, .top-arrow').on('mousedown touchstart', $.proxy(function() {
             var interval;
             this._stopArrowMouseDown = false;
-            this._decreaseArrow();
+            this.scrollbarEngine.decreaseArrow();
             util.disableSelection();
-            interval = setInterval(function(self) {
-                if (self._stopArrowMouseDown || self._decreaseArrow()) {
+            interval = setInterval(function() {
+                if (this._stopArrowMouseDown || this.scrollbarEngine.decreaseArrow()) {
                     clearInterval(interval);
                 }
-            }, Scrollbar._CONST_MOVE_MIL, this);
+            }.bind(this), Scrollbar._CONST_MOVE_MIL);
         }, this));
 
         this._$scrollbar.find('.right-arrow, .bottom-arrow').on('mousedown touchstart', $.proxy(function() {
             var interval;
             this._stopArrowMouseDown = false;
-            this._increaseArrow();
+            this.scrollbarEngine.increaseArrow();
             util.disableSelection();
-            interval = setInterval(function(self) {
-                if (self._stopArrowMouseDown || self._increaseArrow()) {
+            interval = setInterval(function() {
+                if (this._stopArrowMouseDown || this.scrollbarEngine.increaseArrow()) {
                     clearInterval(interval);
                 }
-            }, Scrollbar._CONST_MOVE_MIL, this);
+            }.bind(this), Scrollbar._CONST_MOVE_MIL);
         }, this));
     };
 
@@ -732,4 +793,6 @@
             new ScrollbarVertical($(this), $(targetElement), minSliderSize);
         }
     };
+
+    $.fn.scrollbar.ScrollbarEngine = ScrollbarEngine;
 })();

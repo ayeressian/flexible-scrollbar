@@ -66,15 +66,13 @@
      * @constructor
      * @param {Object} $scrollbar         Jquery object that represents scrollbar.
      * @param {Object} $targetElement     Jquery object that represents an element that should be scrolled.
-     * @param {Object} util               Common utilities object.
      * @param {number} [minSliderSize=40] As the targetElement's content increases the scrollbar thumb size decreases,
      *                                    but there is a minimum size that the thumb should have which is represented
      *                                    by this parameter.
      */
-    function Scrollbar($scrollbar, $targetElement, util, minSliderSize) {
+    function Scrollbar($scrollbar, $targetElement, minSliderSize) {
         this._$scrollbar = $scrollbar;
         this._$targetElement = $targetElement;
-        this._util = util;
 
         this._$sliderBed = this._$scrollbar.find('.slider-bed');
         this._$slider = this._$sliderBed.find('.slider');
@@ -125,7 +123,7 @@
     Scrollbar._MINIMUM_SLIDER_SIZE = 40;
 
     /**
-     * Sets the slider (thumb) position to current position insider thumb bed
+     * Sets the slider (thumb) position to current position insider thumb bed.
      * @private
      */
     Scrollbar.prototype._setSliderPosFromTarget = function() {
@@ -135,7 +133,7 @@
     };
 
     /**
-     * Update slider (thumb) size based on current container and content dimensions
+     * Update slider (thumb) size based on current container and content dimensions.
      * @private
      */
     Scrollbar.prototype._updateSliderSize = function() {
@@ -157,11 +155,11 @@
     };
 
     /**
-     * Ends scrolling for arrow click
+     * Ends scrolling.
      * @private
      */
     Scrollbar.prototype._disableScrolling = function() {
-        this._util.enableSelection();
+        util.enableSelection();
         this._mousePosRelativeToSlider = null;
         this._stopArrowMouseDown = true;
     };
@@ -286,7 +284,7 @@
             var posDelta = eventForSwipeLatest.position - eventForSwipeOneBeforeLatest.position;
             var velocity = posDelta / timeDelta;
             //Safari on IOS doesn't have inertia
-            if (!this._util.isSafari()) {
+            if (!util.isSafari()) {
                 this._touchInertiaAnimator(velocity);
             }
             touchPos = undefined;
@@ -302,7 +300,7 @@
             this._$targetElement.on('mousewheel', $.proxy(function(event) {
                 var delta = this._mousewheelDelta(event),
                     edgeReached;
-                if (this._util.isNaturalScrolling(event)) {
+                if (util.isNaturalScrolling(event)) {
                     delta *= this._mousewheelOrientation();
                 } else {
                     delta *= -this._mousewheelOrientation();
@@ -324,7 +322,7 @@
         this._$slider.on('mousedown touchstart', $.proxy(function(event) {
             this._mousePosRelativeToSlider = this._offsetEvent(event);
             event.stopPropagation();
-            this._util.disableSelection();
+            util.disableSelection();
             return event.preventDefault();
         }, this));
 
@@ -332,7 +330,7 @@
         on('mousemove touchmove', $.proxy(function(event) {
             var newSliderPos;
             if (this._mousePosRelativeToSlider) {
-                this._util.disableSelection();
+                util.disableSelection();
                 newSliderPos = this._page(event) - this._offsetElement(this._$sliderBed) - this._mousePosRelativeToSlider;
                 this._setSliderPos(newSliderPos);
                 return event.preventDefault();
@@ -352,7 +350,7 @@
             var interval;
             this._stopArrowMouseDown = false;
             this._decreaseArrow();
-            this._util.disableSelection();
+            util.disableSelection();
             interval = setInterval(function(self) {
                 if (self._stopArrowMouseDown || self._decreaseArrow()) {
                     clearInterval(interval);
@@ -364,7 +362,7 @@
             var interval;
             this._stopArrowMouseDown = false;
             this._increaseArrow();
-            this._util.disableSelection();
+            util.disableSelection();
             interval = setInterval(function(self) {
                 if (self._stopArrowMouseDown || self._increaseArrow()) {
                     clearInterval(interval);
@@ -496,7 +494,7 @@
      * @augments Scrollbar
      * @see super
      */
-    function ScrollbarHorizontal($scrollbar, $targetElement, util, minSliderSize) {
+    function ScrollbarHorizontal($scrollbar, $targetElement, minSliderSize) {
         var html = '<div class="scrollbar horizontal">' +
             '<div class="left-arrow arrow"></div>' +
             '<div class="right-arrow arrow"></div>' +
@@ -506,7 +504,7 @@
             '</div>';
         $targetElement.css('overflow-x', 'hidden');
         $scrollbar.html(html);
-        Scrollbar.call(this, $scrollbar, $targetElement, util, minSliderSize);
+        Scrollbar.call(this, $scrollbar, $targetElement, minSliderSize);
     }
     ScrollbarHorizontal.prototype = Object.create(Scrollbar.prototype);
 
@@ -550,7 +548,7 @@
      */
     ScrollbarHorizontal.prototype._offsetEvent = function($event) {
         var touch, offsetX;
-        if (this._util.isTouchEvent($event)) {
+        if (util.isTouchEvent($event)) {
             touch = $event.originalEvent.touches[0] || $event.originalEvent.changedTouches[0];
             offsetX = touch.pageX - $($event.target).offset().left;
             return offsetX;
@@ -569,7 +567,7 @@
      * @see super._page
      */
     ScrollbarHorizontal.prototype._page = function($event) {
-        if (this._util.isTouchEvent($event)) {
+        if (util.isTouchEvent($event)) {
             var touch = $event.originalEvent.touches[0] || $event.originalEvent.changedTouches[0];
             return touch.pageY;
         }
@@ -615,7 +613,7 @@
      * @augments Scrollbar
      * @see super
      */
-    function ScrollbarVertical($scrollbar, $targetElement, util, minSliderSize) {
+    function ScrollbarVertical($scrollbar, $targetElement, minSliderSize) {
         var html = '<div class="scrollbar vertical">' +
             '<div class="top-arrow arrow"></div>' +
             '<div class="slider-bed">' +
@@ -625,7 +623,7 @@
             '</div>';
         $targetElement.css('overflow-y', 'hidden');
         $scrollbar.html(html);
-        Scrollbar.call(this, $scrollbar, $targetElement, util, minSliderSize);
+        Scrollbar.call(this, $scrollbar, $targetElement, minSliderSize);
     }
     ScrollbarVertical.prototype = Object.create(Scrollbar.prototype);
 
@@ -669,7 +667,7 @@
      */
     ScrollbarVertical.prototype._offsetEvent = function($event) {
         var touch, offsetY;
-        if (this._util.isTouchEvent($event)) {
+        if (util.isTouchEvent($event)) {
             touch = $event.originalEvent.touches[0] || $event.originalEvent.changedTouches[0];
             offsetY = touch.pageY - $($event.target).offset().top;
             return offsetY;
@@ -688,7 +686,7 @@
      * @see super._page
      */
     ScrollbarVertical.prototype._page = function($event) {
-        if (this._util.isTouchEvent($event)) {
+        if (util.isTouchEvent($event)) {
             var touch = $event.originalEvent.touches[0] || $event.originalEvent.changedTouches[0];
             return touch.pageY;
         }
@@ -729,9 +727,9 @@
 
     $.fn.scrollbar = function(targetElement, isHorizontal, minSliderSize) {
         if (isHorizontal) {
-            new ScrollbarHorizontal($(this), $(targetElement), util, minSliderSize);
+            new ScrollbarHorizontal($(this), $(targetElement), minSliderSize);
         } else {
-            new ScrollbarVertical($(this), $(targetElement), util, minSliderSize);
+            new ScrollbarVertical($(this), $(targetElement), minSliderSize);
         }
     };
 })();

@@ -186,6 +186,7 @@
             this._minSliderSize = Scrollbar._MINIMUM_SLIDER_SIZE;
         }
 
+        //Instead of passing "this" as mediator. Mediator object limits the interface of "this" object.
         var mediator = {
             getContainerScrollPos: this._getContainerScrollPos.bind(this),
             setSliderPosition: this._setSliderPosition.bind(this),

@@ -198,12 +198,12 @@
             scrollContainer: this._scrollContainer.bind(this)
         };
 
-        this.scrollbarEngine = new ScrollbarEngine(mediator, this._minSliderSize, Scrollbar._SLIDER_ARROW_AMOUNT);
+        this._scrollbarEngine = new ScrollbarEngine(mediator, this._minSliderSize, Scrollbar._SLIDER_ARROW_AMOUNT);
 
-        this.scrollbarEngine.updateSliderSize();
+        this._scrollbarEngine.updateSliderSize();
         //TODO: Find a better way to detect the container size change.
         setInterval(function() {
-            this.scrollbarEngine.updateSliderSize();
+            this._scrollbarEngine.updateSliderSize();
         }.bind(this), 100);
         this._initEvents();
         this._initTouchEvents();
@@ -369,7 +369,7 @@
                 } else {
                     delta *= -this._mousewheelOrientation();
                 }
-                edgeReached = this.scrollbarEngine.setSliderPos(this.scrollbarEngine.getCurrentSliderPos() + delta * (event.deltaFactor / 4));
+                edgeReached = this._scrollbarEngine.setSliderPos(this._scrollbarEngine.getCurrentSliderPos() + delta * (event.deltaFactor / 4));
                 if (!edgeReached) {
                     event.preventDefault();
                 }
@@ -396,7 +396,7 @@
             if (this._mousePosRelativeToSlider) {
                 util.disableSelection();
                 newSliderPos = this._page(event) - this._offsetElement(this._$sliderBed) - this._mousePosRelativeToSlider;
-                this.scrollbarEngine.setSliderPos(newSliderPos);
+                this._scrollbarEngine.setSliderPos(newSliderPos);
                 return event.preventDefault();
             }
         }, this)).
@@ -407,16 +407,16 @@
             var newSliderPos;
             this._mousePosRelativeToSlider = this._size(this._$slider) / 2;
             newSliderPos = this._offsetEvent(event) - this._mousePosRelativeToSlider;
-            this.scrollbarEngine.setSliderPos(newSliderPos);
+            this._scrollbarEngine.setSliderPos(newSliderPos);
         }, this));
 
         this._$scrollbar.find('.left-arrow, .top-arrow').on('mousedown touchstart', $.proxy(function() {
             var interval;
             this._stopArrowMouseDown = false;
-            this.scrollbarEngine.decreaseArrow();
+            this._scrollbarEngine.decreaseArrow();
             util.disableSelection();
             interval = setInterval(function() {
-                if (this._stopArrowMouseDown || this.scrollbarEngine.decreaseArrow()) {
+                if (this._stopArrowMouseDown || this._scrollbarEngine.decreaseArrow()) {
                     clearInterval(interval);
                 }
             }.bind(this), Scrollbar._CONST_MOVE_MIL);
@@ -425,10 +425,10 @@
         this._$scrollbar.find('.right-arrow, .bottom-arrow').on('mousedown touchstart', $.proxy(function() {
             var interval;
             this._stopArrowMouseDown = false;
-            this.scrollbarEngine.increaseArrow();
+            this._scrollbarEngine.increaseArrow();
             util.disableSelection();
             interval = setInterval(function() {
-                if (this._stopArrowMouseDown || this.scrollbarEngine.increaseArrow()) {
+                if (this._stopArrowMouseDown || this._scrollbarEngine.increaseArrow()) {
                     clearInterval(interval);
                 }
             }.bind(this), Scrollbar._CONST_MOVE_MIL);

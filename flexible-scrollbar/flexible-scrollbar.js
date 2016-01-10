@@ -64,9 +64,11 @@
     /**
      * ScrollbarEngine contains all the calculation necessary for constructing
      * scrollbar. Note it doesn't and shouldn't have any dependency to Jquery.
-     * It can be used for creating other types of scrollbars.
+     * It can be used for creating other types of custom scrollbars.
      * @constructor
-     * @param {Object} mediator              Is responsible for comunications.
+     * @param {Object} mediator              Is responsible for communications. It should have following public methods
+     *                                       getContainerScrollPos, setSliderPosition, getSliderBedSize, getContainerRealSize,
+     *                                       getContainerSize, hideScrollbar, setSliderSize, scrollContainer.
      * @param {number} minSliderSize         As the container's content increases the scrollbar thumb size decreases,
      *                                       but there is a minimum size that the thumb should have which is represented
      *                                       by this parameter.

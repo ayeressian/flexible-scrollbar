@@ -213,7 +213,7 @@
     /**
      * Determines the amount of scroll (thumb) movement on each scrollbar arrow click.
      * @constant
-     * @type {Number}
+     * @type {number}
      * @static
      * @private
      */
@@ -223,7 +223,7 @@
      * Determines the time interval of scrollbar arrow clicks perform action. In other words,
      * this is the render frame interval of scrollbar arrow click and scrollbar thumb movement.
      * @constant
-     * @type {Number}
+     * @type {number}
      * @static
      * @private
      */
@@ -234,7 +234,7 @@
      * but there is a minimum size that the thumb should have which is represented by this
      * variable.
      * @constant
-     * @type {Number}
+     * @type {number}
      * @static
      * @private
      */
@@ -535,7 +535,7 @@
      * Gets delta property of mouse wheel event.
      * @abstract
      * @param  {Object} $event A Jquery event.
-     * @return {Number}        Delta value of mouse wheel event.
+     * @return {number}        Delta value of mouse wheel event.
      */
     Scrollbar.prototype._mousewheelDelta = function($event) {
         throw new Error('Must be implemented by subclass.');

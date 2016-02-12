@@ -791,6 +791,7 @@
     };
     /*ScrollbarVertical end*/
 
+    //Define's plugin 
     $.fn.scrollbar = function(targetElement, isHorizontal, minSliderSize) {
         if (isHorizontal) {
             new ScrollbarHorizontal($(this), $(targetElement), minSliderSize);
@@ -799,5 +800,6 @@
         }
     };
 
+    //Can be used to create custom scrollbars
     $.fn.scrollbar.ScrollbarEngine = ScrollbarEngine;
 })();

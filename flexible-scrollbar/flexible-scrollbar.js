@@ -571,6 +571,7 @@
         Scrollbar.call(this, $scrollbar, $targetElement, minSliderSize);
     }
     ScrollbarHorizontal.prototype = Object.create(Scrollbar.prototype);
+    ScrollbarHorizontal.prototype.constructor = ScrollbarHorizontal;
 
     /**
      * @see super._size
@@ -690,6 +691,7 @@
         Scrollbar.call(this, $scrollbar, $targetElement, minSliderSize);
     }
     ScrollbarVertical.prototype = Object.create(Scrollbar.prototype);
+    ScrollbarVertical.prototype.constructor = ScrollbarVertical;
 
     /**
      * @see super._size

@@ -167,8 +167,8 @@
     /**
      * Abstract Scrollbar class
      * @constructor
-     * @param {Object} $scrollbar         Jquery object that represents scrollbar.
-     * @param {Object} $targetElement     Jquery object that represents an element that should be scrolled.
+     * @param {JQuery} $scrollbar         Represents scrollbar.
+     * @param {JQuery} $targetElement     Represents an element that should be scrolled.
      * @param {number} [minSliderSize=40] As the targetElement's content increases the scrollbar thumb size decreases,
      *                                    but there is a minimum size that the thumb should have which is represented
      *                                    by this parameter.
@@ -438,7 +438,7 @@
     /**
      * Gets or sets $element size
      * @abstract
-     * @param  {object} $element A Jquery object.
+     * @param  {JQuery} $element Element to be measured.
      * @param  {number} size     New size of $element.
      * @return {number} size     Size of $element. Will be undefined if second
      *                           param value exist.
@@ -450,7 +450,7 @@
     /**
      * Returns scroll size. Or in other words real size of $element.
      * @abstract
-     * @param  {Object} $element A Jquery object.
+     * @param  {JQuery} $element
      * @return {number}          Real size of $element, with considering hidden region,
      *                           which is covered by scroll control.
      */
@@ -461,7 +461,7 @@
     /**
      * Sets or gets position of $element
      * @abstract
-     * @param  {Object} $element A Jquery object.
+     * @param  {JQuery} $element
      * @param  {number} position New position of $element.
      * @return {number}          Position of $element. Will be undefined if second
      *                           param value exist.
@@ -473,8 +473,8 @@
     /**
      * Get touch coordinate
      * @abstract
-     * @param  {Object} $event A Jquery event object.
-     * @return {number}        Touch coordinate.
+     * @param  {JQueryEvent} $event
+     * @return {number}             Touch coordinate.
      */
     Scrollbar.prototype._touchSinglePagePos = function($event) {
         throw new Error('Must be implemented by subclass.');
@@ -483,8 +483,8 @@
     /**
      * Gets offset event.
      * @abstract
-     * @param  {Object} $event A Jquery event Object.
-     * @return {Object}        A Jquery event Object.
+     * @param  {JQueryEvent} $event
+     * @return {JQueryEvent}
      */
     Scrollbar.prototype._offsetEvent = function($event) {
         throw new Error('Must be implemented by subclass.');
@@ -493,18 +493,18 @@
     /**
      * Gets $element offset.
      * @abstract
-     * @param  {Object} $element A Jquery object.
-     * @return {number}          Offset amount.
+     * @param  {JQuery} $element
+     * @return {number} Offset amount.
      */
     Scrollbar.prototype._offsetElement = function($element) {
         throw new Error('Must be implemented by subclass.');
     };
 
     /**
-     * [function description]
+     * Get $event position relative to document
      * @abstract
-     * @param  {[type]} $event [description]
-     * @return {[type]}        [description]
+     * @param  {JQueryEvent} $event
+     * @return {number}             Position of event.
      */
     Scrollbar.prototype._page = function($event) {
         throw new Error('Must be implemented by subclass.');
@@ -513,7 +513,7 @@
     /**
      * Move the container scroll to designated position.
      * @abstract
-     * @param  {Object} $element A Jquery Object.
+     * @param  {JQuery} $element
      * @param  {number} position Position of target scrollbar.
      * @return {number}          Position of scroll if position param hasn't
      *                           been specified.
@@ -525,7 +525,7 @@
     /**
      * Position of $element relative to parent.
      * @abstract
-     * @param  {Object} $element A Jquery Object.
+     * @param  {JQuery} $element
      */
     Scrollbar.prototype._positionRelParent = function($element) {
         throw new Error('Must be implemented by subclass.');
@@ -534,8 +534,8 @@
     /**
      * Gets delta property of mouse wheel event.
      * @abstract
-     * @param  {Object} $event A Jquery event.
-     * @return {number}        Delta value of mouse wheel event.
+     * @param  {JQueryEvent} $event
+     * @return {number}             Delta value of mouse wheel event.
      */
     Scrollbar.prototype._mousewheelDelta = function($event) {
         throw new Error('Must be implemented by subclass.');
@@ -791,7 +791,7 @@
     };
     /*ScrollbarVertical end*/
 
-    //Define's plugin 
+    //Define's plugin
     $.fn.scrollbar = function(targetElement, isHorizontal, minSliderSize) {
         if (isHorizontal) {
             new ScrollbarHorizontal($(this), $(targetElement), minSliderSize);

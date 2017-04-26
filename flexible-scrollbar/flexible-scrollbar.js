@@ -634,7 +634,7 @@
     ScrollbarHorizontal.prototype._page = function($event) {
         if (util.isTouchEvent($event)) {
             var touch = $event.originalEvent.touches[0] || $event.originalEvent.changedTouches[0];
-            return touch.pageY;
+            return touch.pageX;
         }
         return $event.pageX;
     };
